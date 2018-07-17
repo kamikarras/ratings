@@ -83,8 +83,14 @@ def verify_login():
         flash('That login is invalid')
         return redirect("/login")
     
-    
+@app.route("/logout")
+def logout():
+    """logs the current user out"""
 
+    del session['email']
+
+    flash("you are no longer being judged... on this website.")
+    return redirect("/")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
