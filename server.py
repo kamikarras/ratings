@@ -104,7 +104,7 @@ def verify_login():
     if verify_email and (verify_email[0].password == password):
         session['email'] = email
         flash('You are logged in, prepare to be judged.')
-        return redirect("/")
+        return redirect("/user_info?user_id=" + str(verify_email[0].user_id))
 
     else:
         flash('That login is invalid')
