@@ -73,12 +73,31 @@ def movie_list():
 def show_movie(movie_id):
 
     movie = Movie.query.filter(Movie.movie_id == movie_id).one()
-
     ratings = Rating.query.filter(Rating.movie_id == movie_id).all()
+
+    if session['email']:
+        user = User.query.filter(User.email == session['email']).one()
 
     return render_template("movie_details.html",
                            movie=movie,
-                           ratings=ratings)
+                           ratings=ratings,
+                           user=user)
+
+
+@app.route("/movies/<movie_id>", methods=["POST"])
+def rate_movie(movie_id):
+    """Get user info from form and add rating to database"""
+
+    score = request.form.get("score")
+    user = User.query.filter(User.email == session['email']).one()
+
+    rating = Rating(score=score, movie_id=movie_id, user_id=user.user_id)
+    db.session.add(rating)
+    db.session.commit()
+
+    flash('You have judged this movie.')
+    return redirect("/user_info?user_id=" + str(user.user_id))
+
 
 @app.route("/register", methods=["GET"])
 def register_form():

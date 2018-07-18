@@ -5,8 +5,24 @@
 <h2>{{movie.title}}</h2>
 
 <p>released: {{movie.released_at.strftime('%Y')}}</p>
-<a href={{movie.imdb_url}}>IMDB page</a>
+<p><a href={{movie.imdb_url}}>IMDB page</a></p>
 
+{% if session['email'] %}
+	<br>
+ 	
+	<form action="/movies/{{ movie.movie_id }}" method="POST">
+		Rate this biznatch:
+		<select name="score">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+		</select>
+		<input type="submit">
+	</form>
+	
+{% endif %}
 
 <ul><h3>User Ratings:</h3>
 
