@@ -7,6 +7,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.orm.exc import NoResultFound
 
 from model import User, Rating, Movie, connect_to_db, db
+from pprint import pprint
 
 
 app = Flask(__name__)
@@ -56,6 +57,28 @@ def show_user():
                            movie_score=movie_score
                            )
 
+# @app.route("/user/<user_id>")
+# def show_user(user_id):
+
+@app.route("/movies")
+def movie_list():
+    """Show list of movies in alphabetical order."""
+
+    movies = Movie.query.order_by(Movie.title).all()
+
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route("/movies/<movie_id>")
+def show_movie(movie_id):
+
+    movie = Movie.query.filter(Movie.movie_id == movie_id).one()
+
+    ratings = Rating.query.filter(Rating.movie_id == movie_id).all()
+
+    return render_template("movie_details.html",
+                           movie=movie,
+                           ratings=ratings)
 
 @app.route("/register", methods=["GET"])
 def register_form():
