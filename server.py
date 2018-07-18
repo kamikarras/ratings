@@ -4,6 +4,7 @@ from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
+from sqlalchemy.orm.exc import NoResultFound
 
 from model import User, Rating, Movie, connect_to_db, db
 
@@ -33,6 +34,29 @@ def user_list():
     return render_template("user_list.html", users=users)
 
 
+@app.route("/user_info", methods=["GET"])
+def show_user():
+    """shows individual user info"""
+
+    user_id = request.args.get('user_id')
+
+    user = User.query.filter(User.user_id == user_id).one()
+    age = user.age
+    zipcode = user.zipcode
+
+    user_ratings = Rating.query.filter(Rating.user_id == user.user_id).all()
+    movie_score = []
+    for rating in user_ratings:
+        movie_score.append((rating.movie.title, rating.score))
+
+    return render_template("user_info.html",
+                           user_id=user_id,
+                           age=age,
+                           zipcode=zipcode,
+                           movie_score=movie_score
+                           )
+
+
 @app.route("/register", methods=["GET"])
 def register_form():
     """display register form"""
@@ -46,14 +70,17 @@ def register_process():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    verify_email = User.query.filter(User.email == email).one()
+    try:
 
-    if not verify_email:
+        verify_email = User.query.filter(User.email == email).one()
+
+    # if not verify_email:
         user = User(email=email, password=password)
         db.session.add(user)
         db.session.commit()
         return redirect("/")
-    else:
+    # else:
+    except NoResultFound:
         flash('A user with that email already exists!')
         return redirect("/register")
 
