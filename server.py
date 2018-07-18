@@ -46,15 +46,15 @@ def show_user():
     zipcode = user.zipcode
 
     user_ratings = Rating.query.filter(Rating.user_id == user.user_id).all()
-    movie_score = []
-    for rating in user_ratings:
-        movie_score.append((rating.movie.title, rating.score))
+    # movie_score = []
+    # for rating in user_ratings:
+    #     movie_score.append((rating.movie.title, rating.score))
 
     return render_template("user_info.html",
                            user_id=user_id,
                            age=age,
                            zipcode=zipcode,
-                           movie_score=movie_score
+                           user_ratings=user_ratings
                            )
 
 # @app.route("/user/<user_id>")
