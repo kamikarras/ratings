@@ -95,9 +95,14 @@ def rate_movie(movie_id):
 
     score = request.form.get("score")
     user = User.query.filter(User.email == session['email']).one()
+    new_rating = Rating.query.filter_by(user_id=user.user_id, movie_id=movie_id).first()
 
-    rating = Rating(score=score, movie_id=movie_id, user_id=user.user_id)
-    db.session.add(rating)
+    if bool(new_rating):
+        new_rating.score = score
+    else:
+        new_rating = Rating(score=score, movie_id=movie_id, user_id=user.user_id)
+        db.session.add(new_rating)
+
     db.session.commit()
 
     flash('You have judged this movie.')
