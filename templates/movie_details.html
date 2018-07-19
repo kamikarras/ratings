@@ -7,9 +7,10 @@
 <p>released: {{movie.released_at.strftime('%Y')}}</p>
 <p><a href={{movie.imdb_url}}>IMDB page</a></p>
 
-{% if session['email'] %}
-	<br>
- 	
+{% if session %}
+ 	{% if user_rating %}
+ 		<p>Your current rating: {{ user_rating[0] }}</p>
+ 	{% endif %}
 	<form action="/movies/{{ movie.movie_id }}" method="POST">
 		Rate this biznatch:
 		<select name="score">

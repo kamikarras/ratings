@@ -75,13 +75,18 @@ def show_movie(movie_id):
     movie = Movie.query.filter(Movie.movie_id == movie_id).one()
     ratings = Rating.query.filter(Rating.movie_id == movie_id).all()
 
-    if session['email']:
+    try:
         user = User.query.filter(User.email == session['email']).one()
-
-    return render_template("movie_details.html",
-                           movie=movie,
-                           ratings=ratings,
-                           user=user)
+        user_rating = [rating.score for rating in ratings if rating.user_id == user.user_id]
+        return render_template("movie_details.html",
+                               movie=movie,
+                               ratings=ratings,
+                               user=user,
+                               user_rating=user_rating)
+    except KeyError:
+        return render_template("movie_details.html",
+                               movie=movie,
+                               ratings=ratings)
 
 
 @app.route("/movies/<movie_id>", methods=["POST"])
@@ -113,15 +118,12 @@ def register_process():
     password = request.form.get('password')
 
     try:
-
         verify_email = User.query.filter(User.email == email).one()
-
-    # if not verify_email:
         user = User(email=email, password=password)
         db.session.add(user)
         db.session.commit()
         return redirect("/")
-    # else:
+
     except NoResultFound:
         flash('A user with that email already exists!')
         return redirect("/register")
